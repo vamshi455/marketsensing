@@ -1,0 +1,93 @@
+# Instrument Definitions
+# All tradeable instruments tracked by MarketSensing
+
+futures:
+  - id: WTI_CL_F1
+    name: WTI Crude Front-Month
+    exchange: NYMEX
+    product: CL
+    contract_size: 1000  # barrels
+    tick_size: 0.01
+    currency: USD
+    category: crude
+
+  - id: WTI_CL_F3
+    name: WTI Crude 3-Month
+    exchange: NYMEX
+    product: CL
+    contract_size: 1000
+    tick_size: 0.01
+    currency: USD
+    category: crude
+
+  - id: WTI_CL_F6
+    name: WTI Crude 6-Month
+    exchange: NYMEX
+    product: CL
+    contract_size: 1000
+    tick_size: 0.01
+    currency: USD
+    category: crude
+
+  - id: WTI_CL_F12
+    name: WTI Crude 12-Month
+    exchange: NYMEX
+    product: CL
+    contract_size: 1000
+    tick_size: 0.01
+    currency: USD
+    category: crude
+
+  - id: RBOB_F1
+    name: RBOB Gasoline Front-Month
+    exchange: NYMEX
+    product: RB
+    contract_size: 42000  # gallons
+    tick_size: 0.0001
+    currency: USD
+    category: products
+
+  - id: ULSD_F1
+    name: ULSD Diesel Front-Month
+    exchange: NYMEX
+    product: HO
+    contract_size: 42000  # gallons
+    tick_size: 0.0001
+    currency: USD
+    category: products
+
+physical:
+  - id: WTI_MIDLAND
+    name: WTI Midland Assessment
+    hub: Midland
+    state: TX
+    provider: platts  # or argus
+    unit: USD/bbl
+    category: crude
+
+  - id: WTI_CUSHING
+    name: WTI Cushing Assessment
+    hub: Cushing
+    state: OK
+    provider: platts
+    unit: USD/bbl
+    category: crude
+
+  - id: WTI_HOUSTON
+    name: WTI Houston (MEH) Assessment
+    hub: Houston
+    state: TX
+    provider: platts
+    unit: USD/bbl
+    category: crude
+
+# Phase 3 - Natural Gas
+# gas:
+#   - id: NG_HH_F1
+#     name: Henry Hub Front-Month
+#     exchange: NYMEX
+#     product: NG
+#     contract_size: 10000  # MMBtu
+#     tick_size: 0.001
+#     currency: USD
+#     category: natural_gas

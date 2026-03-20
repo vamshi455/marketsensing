@@ -1,0 +1,119 @@
+# Strategy Definitions and Parameters
+# All thresholds, windows, and model parameters are configured here
+
+strategies:
+
+  # --- Location Spread Strategies ---
+  spread_midland_cushing:
+    type: location_spread
+    instrument_long: WTI_MIDLAND
+    instrument_short: WTI_CUSHING
+    enabled: true
+    phase: 1
+    parameters:
+      lookback_days: 60
+      z_score_entry: 2.0        # enter when |z| > this
+      z_score_exit: 0.5         # exit when |z| < this
+      min_spread_history: 30    # minimum days of data before trading
+      max_holding_days: 15
+    risk:
+      max_position_contracts: 50
+      max_notional_usd: 5000000
+      stop_loss_sigma: 3.5
+
+  spread_cushing_houston:
+    type: location_spread
+    instrument_long: WTI_CUSHING
+    instrument_short: WTI_HOUSTON
+    enabled: true
+    phase: 1
+    parameters:
+      lookback_days: 60
+      z_score_entry: 2.0
+      z_score_exit: 0.5
+      min_spread_history: 30
+      max_holding_days: 15
+    risk:
+      max_position_contracts: 50
+      max_notional_usd: 5000000
+      stop_loss_sigma: 3.5
+
+  spread_midland_houston:
+    type: location_spread
+    instrument_long: WTI_MIDLAND
+    instrument_short: WTI_HOUSTON
+    enabled: true
+    phase: 1
+    parameters:
+      lookback_days: 60
+      z_score_entry: 2.0
+      z_score_exit: 0.5
+      min_spread_history: 30
+      max_holding_days: 15
+    risk:
+      max_position_contracts: 50
+      max_notional_usd: 5000000
+      stop_loss_sigma: 3.5
+
+  # --- Time Spread / Term Structure Strategies ---
+  time_spread_1_3:
+    type: time_spread
+    instrument_near: WTI_CL_F1
+    instrument_far: WTI_CL_F3
+    enabled: true
+    phase: 1
+    parameters:
+      lookback_days: 90
+      z_score_entry: 1.5
+      z_score_exit: 0.3
+      storage_cost_per_bbl_month: 0.45  # USD
+      financing_rate_annual: 0.05
+      min_contango_profit: 0.10  # USD/bbl after costs
+    risk:
+      max_position_contracts: 100
+      max_notional_usd: 10000000
+      stop_loss_sigma: 3.0
+
+  time_spread_1_6:
+    type: time_spread
+    instrument_near: WTI_CL_F1
+    instrument_far: WTI_CL_F6
+    enabled: true
+    phase: 1
+    parameters:
+      lookback_days: 120
+      z_score_entry: 1.5
+      z_score_exit: 0.3
+      storage_cost_per_bbl_month: 0.45
+      financing_rate_annual: 0.05
+      min_contango_profit: 0.25
+    risk:
+      max_position_contracts: 75
+      max_notional_usd: 7500000
+      stop_loss_sigma: 3.0
+
+  # --- Crack Spread Strategies (Phase 2) ---
+  crack_321:
+    type: crack_spread
+    instrument_crude: WTI_CL_F1
+    instrument_gasoline: RBOB_F1
+    instrument_diesel: ULSD_F1
+    crack_ratio: "3:2:1"  # 3 crude : 2 gasoline : 1 diesel
+    enabled: false  # Phase 2
+    phase: 2
+    parameters:
+      lookback_days: 90
+      z_score_entry: 2.0
+      z_score_exit: 0.5
+      seasonal_adjustment: true
+      seasonal_lookback_years: 5
+    risk:
+      max_position_contracts: 30
+      max_notional_usd: 3000000
+      stop_loss_sigma: 3.0
+
+# --- Global Signal Parameters ---
+global:
+  signal_cooldown_minutes: 15     # min time between signals for same strategy
+  confidence_threshold: 0.3       # minimum confidence to emit signal
+  max_concurrent_signals: 20      # max active signals across all strategies

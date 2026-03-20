@@ -1,0 +1,53 @@
+# Risk Limits and Controls
+# Portfolio-level and strategy-level risk parameters
+
+portfolio:
+  max_total_notional_usd: 50000000
+  max_total_contracts: 500
+  max_daily_signals: 100
+  max_drawdown_pct: 5.0           # pause all signals if portfolio drawdown exceeds
+  correlation_limit: 0.85          # max correlation between active positions
+
+per_strategy:
+  max_position_contracts: 100
+  max_notional_usd: 10000000
+  max_daily_loss_usd: 500000
+  max_consecutive_losses: 5        # pause strategy after N consecutive losing signals
+
+# Event-based kill switches
+kill_switches:
+  eia_crude_report:
+    event: "EIA Weekly Petroleum Status"
+    mute_minutes_before: 5
+    mute_minutes_after: 10
+    affected_strategies:
+      - spread_midland_cushing
+      - spread_cushing_houston
+      - spread_midland_houston
+      - time_spread_1_3
+      - time_spread_1_6
+
+  eia_gas_storage:
+    event: "EIA Natural Gas Storage"
+    mute_minutes_before: 5
+    mute_minutes_after: 10
+    affected_strategies: []  # Phase 3
+
+  fomc_decision:
+    event: "FOMC Rate Decision"
+    mute_minutes_before: 15
+    mute_minutes_after: 30
+    affected_strategies: "all"
+
+  hurricane_alert:
+    event: "Gulf Coast Hurricane Warning"
+    mute_minutes_before: 0
+    mute_minutes_after: 0
+    manual_override_required: true
+    affected_strategies: "all"
+
+# Signal staleness
+staleness:
+  max_signal_age_minutes: 60       # signals older than this are auto-expired
+  max_feature_age_minutes: 30      # features older than this trigger warning
+  max_market_data_gap_minutes: 5   # alert if no market data for this long

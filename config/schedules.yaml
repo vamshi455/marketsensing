@@ -1,0 +1,104 @@
+# Ingestion and Event Schedules
+
+# Market data ingestion
+market_data:
+  streaming:
+    nymex_futures:
+      source: event_hub
+      topic: nymex-futures-tick
+      instruments: [WTI_CL_F1, WTI_CL_F3, WTI_CL_F6, WTI_CL_F12, RBOB_F1, ULSD_F1]
+      active_hours: "08:00-15:30 CT"  # NYMEX pit session
+      electronic_hours: "17:00-16:00 CT"  # Globex nearly 24h
+
+    physical_assessments:
+      source: event_hub
+      topic: physical-prices
+      instruments: [WTI_MIDLAND, WTI_CUSHING, WTI_HOUSTON]
+      frequency: eod  # end of day
+
+  batch:
+    eod_settlement:
+      source: adf_pipeline
+      schedule: "0 17 * * 1-5"  # 5pm CT weekdays
+      description: "NYMEX settlement prices"
+
+# Fundamental data schedules
+fundamentals:
+  eia_crude_inventory:
+    source: adf_pipeline
+    schedule: "0 10:30 * * 3"  # 10:30am ET Wednesdays
+    url_pattern: "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
+    description: "EIA Weekly Petroleum Status Report"
+    key_fields:
+      - us_crude_stocks
+      - cushing_stocks
+      - crude_imports
+      - refinery_utilization
+
+  eia_gas_storage:
+    source: adf_pipeline
+    schedule: "0 10:30 * * 4"  # 10:30am ET Thursdays
+    description: "EIA Weekly Natural Gas Storage"
+    phase: 3
+
+  baker_hughes_rig_count:
+    source: adf_pipeline
+    schedule: "0 13:00 * * 5"  # 1pm ET Fridays
+    description: "Baker Hughes US Oil & Gas Rig Count"
+    key_fields:
+      - us_oil_rigs
+      - us_gas_rigs
+      - permian_rigs
+
+  weather_alerts:
+    source: adf_pipeline
+    schedule: "*/30 * * * *"  # every 30 minutes
+    description: "NOAA Gulf Coast weather/hurricane alerts"
+    region: gulf_coast
+
+# Scheduled events calendar
+events:
+  eia_crude:
+    day_of_week: wednesday
+    time: "10:30 ET"
+    impact: high
+
+  eia_gas:
+    day_of_week: thursday
+    time: "10:30 ET"
+    impact: high
+    phase: 3
+
+  baker_hughes:
+    day_of_week: friday
+    time: "13:00 ET"
+    impact: medium
+
+  fomc:
+    frequency: "~6 weeks"
+    impact: high
+    source: federal_reserve_calendar
+
+# Feature computation schedule
+feature_computation:
+  realtime_features:
+    schedule: "*/1 * * * *"  # every minute during market hours
+    features: [price_bars, spreads, technical_indicators]
+
+  daily_features:
+    schedule: "0 18 * * 1-5"  # 6pm CT after settlement
+    features: [fundamental_features, seasonal_flags, z_scores]
+
+# Signal evaluation schedule
+signal_evaluation:
+  fast_signals:
+    schedule: "*/1 * * * *"  # every minute
+    strategies: [spread_midland_cushing, spread_cushing_houston, spread_midland_houston]
+
+  medium_signals:
+    schedule: "*/5 * * * *"  # every 5 minutes
+    strategies: [time_spread_1_3, time_spread_1_6]
+
+  slow_signals:
+    schedule: "0 * * * *"  # hourly
+    strategies: [crack_321]
