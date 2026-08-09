@@ -65,7 +65,7 @@
       overflow-y: auto;
       padding-right: 10px;
       flex-shrink: 0;
-      width: 240px;
+      width: 260px;
     }
 
     .source-box {
@@ -88,7 +88,14 @@
     .source-name {
       color: #fb923c;
       font-weight: bold;
-      font-size: 0.95em;
+      font-size: 0.9em;
+      margin-bottom: 4px;
+    }
+
+    .source-acronym {
+      color: #f59e0b;
+      font-size: 0.7em;
+      font-style: italic;
       margin-bottom: 6px;
     }
 
@@ -115,7 +122,7 @@
       flex-direction: column;
       gap: 12px;
       flex-shrink: 0;
-      width: 260px;
+      width: 280px;
     }
 
     .model-box {
@@ -269,7 +276,28 @@
     .panel-stat-value {
       color: #60a5fa;
       font-weight: bold;
-      font-size: 1.2em;
+      font-size: 1.1em;
+    }
+
+    .signal-metric {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 3px solid #10b981;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+
+    .metric-name {
+      color: #6ee7b7;
+      font-weight: bold;
+      font-size: 0.95em;
+      margin-bottom: 5px;
+    }
+
+    .metric-description {
+      color: #cbd5e1;
+      font-size: 0.85em;
+      line-height: 1.5;
     }
 
     .empty-state {
@@ -338,145 +366,177 @@ const sources = [
   {
     id: "nymex",
     name: "NYMEX",
+    acronym: "New York Mercantile Exchange",
     desc: "WTI, RBOB, ULSD futures. Real-time prices.",
     category: "Trading Data",
     frequency: "Every second",
-    impact: "Heartbeat of the system.",
+    fullName: "New York Mercantile Exchange (NYMEX) Futures",
+    impact: "Heartbeat of the system. Every tick feeds into signals.",
     usedBy: ["Time Spread Model", "Price Trends Model"]
   },
   {
     id: "kpler",
     name: "Kpler",
+    acronym: "Commercial Tanker Tracking Platform",
     desc: "Real tanker tracking. Physical oil flows by region.",
     category: "Physical Flows",
     frequency: "Daily updates",
-    impact: "Early supply signal.",
+    fullName: "Kpler - Vessel tracking & shipping intelligence",
+    impact: "Early supply signal. Moves before EIA reports hit.",
     usedBy: ["Supply Shock Model", "Geographic Arbitrage Model"]
   },
   {
     id: "eia",
     name: "EIA",
+    acronym: "US Energy Information Administration",
     desc: "Weekly inventory, production, refinery runs.",
     category: "Inventory Data",
     frequency: "Weekly (Wed 10:30am)",
-    impact: "Market-moving reports.",
+    fullName: "Energy Information Administration (EIA) Reports",
+    impact: "Market-moving reports. Surprises generate trading signals.",
     usedBy: ["Inventory Surprise Model", "Seasonal Model"]
   },
   {
     id: "mpr",
-    name: "MPR / MIPS",
+    name: "Internal Forecasts",
+    acronym: "MPR/MIPS (Production & Sales Planning)",
     desc: "Organization internal forecasts & sales predictions.",
     category: "Internal Operations",
-    frequency: "Daily",
-    impact: "Only we have this data.",
+    frequency: "Updated daily",
+    fullName: "Internal Production & Sales Forecasts",
+    impact: "Only this organization has this data.",
     usedBy: ["Internal Supply Model"]
   },
   {
     id: "trr",
-    name: "TRR",
-    desc: "Transportation costs: pipeline, barge, vessel.",
+    name: "Cost Index",
+    acronym: "TRR (Transportation Rate Records)",
+    desc: "Transportation costs: pipeline, barge, vessel rates.",
     category: "Logistics",
     frequency: "Daily",
-    impact: "Affects profitable spreads.",
-    usedBy: ["Geographic Arbitrage Model"]
+    fullName: "Transportation Cost Index (Pipeline, Barge, Vessel Rates)",
+    impact: "Changes basis value. Affects profitable spreads.",
+    usedBy: ["Geographic Arbitrage Model", "Cost-Adjusted Signals"]
   },
   {
     id: "weather",
     name: "Weather Source",
+    acronym: "Weather Intelligence Platform",
     desc: "Temperature, precipitation, wind data.",
     category: "External Factors",
     frequency: "Real-time",
-    impact: "Drives heating oil demand.",
+    fullName: "Weather Source - Environmental Intelligence",
+    impact: "Drives heating oil demand. Cold weather = ULSD surge.",
     usedBy: ["Demand Model"]
   },
   {
     id: "planning",
-    name: "Planning DB",
+    name: "Maintenance Schedule DB",
+    acronym: "Planning Database - Refinery Turnarounds",
     desc: "Refinery maintenance schedules & turnarounds.",
     category: "Internal Operations",
     frequency: "Weeks ahead",
-    impact: "Know supply shocks early.",
+    fullName: "Internal Refinery Maintenance & Planning Database",
+    impact: "Know supply shocks before they happen.",
     usedBy: ["Supply Shock Model"]
   },
   {
     id: "eis",
-    name: "EIS",
+    name: "Sales Forecasts",
+    acronym: "EIS (Enterprise Information System)",
     desc: "Internal sales forecasts by customer & product.",
     category: "Internal Sales",
     frequency: "Daily/Weekly",
-    impact: "Our demand signals.",
+    fullName: "Enterprise Sales Forecast System (EIS)",
+    impact: "Our demand signals. Know if orders will surge or slow.",
     usedBy: ["Demand Model", "Volume Model"]
   },
   {
     id: "tmr",
-    name: "TMR",
+    name: "Deal Tracking",
+    acronym: "TMR (Trade & Movement Records)",
     desc: "Internal deal tracking & trade history.",
     category: "Execution History",
     frequency: "Real-time",
-    impact: "Backtesting & validation.",
+    fullName: "Trade & Movement Records (TMR) System",
+    impact: "Backtesting. Proves which signals work.",
     usedBy: ["Backtesting Engine"]
   },
   {
     id: "rdw",
-    name: "RDW",
+    name: "Risk Dashboard",
+    acronym: "RDW (Risk Data Warehouse)",
     desc: "Risk positions, P&L, portfolio constraints.",
     category: "Risk Tracking",
     frequency: "Real-time",
-    impact: "Risk filters prevent losses.",
+    fullName: "Risk Data Warehouse (RDW)",
+    impact: "Risk filters prevent catastrophic losses.",
     usedBy: ["Risk Filter Model"]
   },
   {
     id: "iir",
-    name: "IIR",
+    name: "Market Intelligence",
+    acronym: "IIR (Integrated Information Resources)",
     desc: "Market intelligence & news feeds.",
     category: "Market Intel",
     frequency: "Daily",
-    impact: "Sentiment context.",
+    fullName: "Market Intelligence (News & Analysis)",
+    impact: "Sentiment and context. Refines signals.",
     usedBy: ["Sentiment Model"]
   },
   {
     id: "genscape",
     name: "Genscape",
-    desc: "Real-time refinery operations data.",
+    acronym: "Real-time Refinery Operations Intelligence",
+    desc: "Real-time refinery operations and utilization data.",
     category: "Operational Intel",
     frequency: "Real-time",
-    impact: "Know refinery runs early.",
+    fullName: "Genscape - Real-time Operations Monitoring",
+    impact: "Know refinery runs before EIA reports.",
     usedBy: ["Refinery Run Model"]
   },
   {
     id: "woodmac",
     name: "WoodMac",
-    desc: "Long-term commodity forecasts.",
+    acronym: "Wood Mackenzie Energy Analytics",
+    desc: "Long-term commodity forecasts and market outlooks.",
     category: "Market Analysis",
     frequency: "Weekly/Monthly",
-    impact: "Macro trends context.",
+    fullName: "Wood Mackenzie - Energy Market Analysis",
+    impact: "Macro trends. Long-term signal context.",
     usedBy: ["Trend Model"]
   },
   {
     id: "enverus",
     name: "Enverus",
-    desc: "Upstream production & rig count trends.",
+    acronym: "Upstream Production & Rig Intelligence",
+    desc: "Upstream production data and rig count trends.",
     category: "Supply Chain",
     frequency: "Weekly",
-    impact: "Supply outlook signals.",
+    fullName: "Enverus - Upstream Production Analytics",
+    impact: "Production trends. Supply outlook.",
     usedBy: ["Supply Model"]
   },
   {
     id: "cftc",
     name: "CFTC",
+    acronym: "Commodity Futures Trading Commission",
     desc: "Speculative positioning reports.",
     category: "Market Positioning",
     frequency: "Weekly",
-    impact: "Big trader sentiment.",
+    fullName: "CFTC Commitment of Traders Reports",
+    impact: "See what big traders are doing. Sentiment.",
     usedBy: ["Positioning Model"]
   },
   {
     id: "argus",
-    name: "Platts / Argus",
+    name: "Platts/Argus",
+    acronym: "Physical Price Assessments",
     desc: "Physical hub prices: Midland, Cushing, Houston.",
     category: "Physical Prices",
     frequency: "Daily",
-    impact: "Geographic basis signals.",
+    fullName: "Platts/Argus - Physical Hub Assessments",
+    impact: "Geographic basis signals. Location arbitrage.",
     usedBy: ["Geographic Arbitrage Model"]
   }
 ];
@@ -488,7 +548,13 @@ const models = [
     desc: "Front-month vs 3/6/12-month prices",
     outputs: "Buy/Sell contango/backwardation",
     accuracy: "63% precision",
-    sources: ["NYMEX", "EIA", "Weather"]
+    sources: ["NYMEX", "EIA", "Weather"],
+    signals: [
+      { name: "Contango Signal", desc: "When near-term is cheaper than far-term (normal market). Buy near, sell far. Profit from curve normalization." },
+      { name: "Backwardation Signal", desc: "When near-term is more expensive than far-term (tight supply). Sell near, buy far. Profit when curve steepens." },
+      { name: "Z-Score Threshold", desc: "Spread is 2.0+ standard deviations away from 60-day average. Entry signal when opportunity is statistically significant." },
+      { name: "Mean Reversion", desc: "Model predicts spread will revert to historical average within 1-90 days. Profit from normalization." }
+    ]
   },
   {
     id: "lgb_geo",
@@ -496,7 +562,13 @@ const models = [
     desc: "Midland vs Cushing vs Houston",
     outputs: "Which hub to buy/sell",
     accuracy: "58% precision",
-    sources: ["Kpler", "Argus", "TRR"]
+    sources: ["Kpler", "Platts/Argus", "Cost Index"],
+    signals: [
+      { name: "Midland-Cushing Spread", desc: "WTI Midland price minus Cushing price. Positive = buy Midland, sell Cushing. Profit if spread narrows." },
+      { name: "Hub Basis Dislocation", desc: "One hub significantly cheaper/expensive vs NYMEX. Opportunity to lock in basis profit." },
+      { name: "Flow Impact", desc: "Kpler shows 500K bbl/day flowing Midland→Gulf (normal 300K). Signals oversupply in Midland, lower prices coming." },
+      { name: "Transportation Economics", desc: "Cost to move crude Midland→Houston < price spread. Buy Midland, sell Houston, pay transport, pocket profit." }
+    ]
   },
   {
     id: "lgb_supply",
@@ -504,7 +576,13 @@ const models = [
     desc: "Predicts supply tightening 1-3 weeks ahead",
     outputs: "Supply shock signals",
     accuracy: "71% precision",
-    sources: ["Genscape", "Enverus", "Planning DB", "EIA"]
+    sources: ["Genscape", "Enverus", "Planning DB", "EIA"],
+    signals: [
+      { name: "Turnaround Alert", desc: "Planning DB shows refinery maintenance Aug 15-20 (50K bbl/day loss). Model predicts RBOB spreads will widen 2-3 weeks before." },
+      { name: "Production Trend", desc: "Genscape shows crude runs declining 3 of last 4 days. Predicts tighter market, higher prices ahead." },
+      { name: "Rig Count Impact", desc: "Enverus: active oil rigs down 50 YoY. Predicts declining upstream production over 6-12 months." },
+      { name: "EIA Surprise", desc: "EIA reports inventory drew 10MM bbl vs consensus +5MM. Supply actually tighter than expected. Bullish signal." }
+    ]
   },
   {
     id: "lgb_demand",
@@ -512,7 +590,13 @@ const models = [
     desc: "Predicts demand surge/decline",
     outputs: "Demand signals",
     accuracy: "65% precision",
-    sources: ["Weather", "EIS", "EIA"]
+    sources: ["Weather", "Sales Forecasts", "EIA"],
+    signals: [
+      { name: "Weather-Driven Demand", desc: "Temperature forecast: -10°F below normal next week. Heating oil demand expected to surge. Buy ULSD spreads now." },
+      { name: "Customer Order Forecast", desc: "Sales Forecast: Speedway chain ordering +15% next 2 weeks (back-to-school travel surge). RBOB demand up." },
+      { name: "Seasonal Pattern", desc: "Model learned: demand peaks mid-July through August. Current time = peak demand season. Expect supply pressure." },
+      { name: "Inventory Surprise", desc: "EIA reports inventory draw vs expected build. Demand stronger than consensus. Bullish for prices." }
+    ]
   },
   {
     id: "risk_filter",
@@ -520,7 +604,13 @@ const models = [
     desc: "Hard stops on position size & correlation",
     outputs: "Approved signals only",
     accuracy: "99.9% (hard stops)",
-    sources: ["RDW"]
+    sources: ["RDW"],
+    signals: [
+      { name: "Position Limit Check", desc: "Current WTI long = 500K bbl. New signal = +100K bbl. Limit = 600K. APPROVED (not breaking limit)." },
+      { name: "Correlation Risk", desc: "Current long WTI + long RBOB (0.85 correlation). New signal = short ULSD (-0.92 correlation to RBOB). APPROVED (reduces portfolio risk)." },
+      { name: "Drawdown Constraint", desc: "Current P&L: +$2.1M. Max acceptable loss = $1M. New trade expected risk = $300K. APPROVED (within tolerance)." },
+      { name: "Concentration Risk", desc: "Time spreads = 80% of portfolio. New geo spread signal breaks concentration. APPROVED." }
+    ]
   },
   {
     id: "orchestration",
@@ -528,7 +618,13 @@ const models = [
     desc: "Merges 50+ model predictions. Ranks top 20.",
     outputs: "Signal Book",
     accuracy: "Sharpe 1.94x",
-    sources: ["All Models"]
+    sources: ["All Models"],
+    signals: [
+      { name: "Confidence Score", desc: "Combines 5 models predicting same direction + risk filter approval. Confidence = 82%. High confidence = rank higher." },
+      { name: "Expected P&L", desc: "Time Spread Model: +$210K expected. Geo Model: +$140K expected. Total expected = $350K if both triggered." },
+      { name: "Signal Ranking", desc: "Ranks top 20 by expected P&L / risk ratio. Best risk-adjusted trades bubble to top of trader dashboard." },
+      { name: "Conflict Resolution", desc: "Time Spread says SHORT WTI F1-F3. Supply Shock says LONG (because of turnaround). Orchestrator weighs by confidence, picks winner." }
+    ]
   }
 ];
 
@@ -547,6 +643,7 @@ function renderSources() {
   col.innerHTML = sources.map(s => `
     <div class="source-box" onclick="showSourceDetails('${s.id}')">
       <div class="source-name">${s.name}</div>
+      <div class="source-acronym">${s.acronym}</div>
       <div class="source-desc">${s.desc}</div>
     </div>
   `).join('');
@@ -587,6 +684,11 @@ function showSourceDetails(id) {
     </div>
 
     <div class="panel-section">
+      <div class="panel-section-title">Full Name</div>
+      <div class="panel-text">${source.fullName}</div>
+    </div>
+
+    <div class="panel-section">
       <div class="panel-section-title">What We Get</div>
       <div class="panel-text">${source.desc}</div>
     </div>
@@ -613,12 +715,19 @@ function showSourceDetails(id) {
   `;
 }
 
-// Show model details
+// Show model details with signal descriptions
 function showModelDetails(id) {
   const model = models.find(m => m.id === id);
   if (!model) return;
 
   const panel = document.getElementById('panelContent');
+  const signalsHTML = model.signals.map(sig => `
+    <div class="signal-metric">
+      <div class="metric-name">📊 ${sig.name}</div>
+      <div class="metric-description">${sig.desc}</div>
+    </div>
+  `).join('');
+
   panel.innerHTML = `
     <div class="panel-header">
       <div class="panel-title">${model.name}</div>
@@ -631,7 +740,12 @@ function showModelDetails(id) {
     </div>
 
     <div class="panel-section">
-      <div class="panel-section-title">Outputs</div>
+      <div class="panel-section-title">Signal Metrics & Descriptions</div>
+      ${signalsHTML}
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Model Performance</div>
       <div class="panel-stat">
         <div class="panel-stat-label">Signal Type</div>
         <div class="panel-stat-value">${model.outputs}</div>
