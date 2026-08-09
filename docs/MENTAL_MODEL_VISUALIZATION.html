@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarketSensing: Complete System Mental Model</title>
+  <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #e2e8f0;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  color: #60a5fa;
+  margin-bottom: 10px;
+  font-size: 2.5em;
+}
+
+.subtitle {
+  text-align: center;
+  color: #94a3b8;
+  margin-bottom: 40px;
+  font-size: 1.1em;
+}
+
+.section {
+  background: rgba(15, 23, 42, 0.8);
+  border: 2px solid #334155;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.section-title {
+  color: #3b82f6;
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #3b82f6;
+}
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.source-box {
+  background: rgba(30, 41, 59, 0.9);
+  border-left: 4px solid;
+  padding: 20px;
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+
+.source-box:hover {
+  transform: translateX(5px);
+}
+
+.source-box.trading { border-left-color: #f97316; }
+.source-box.operations { border-left-color: #3b82f6; }
+.source-box.enterprise { border-left-color: #8b5cf6; }
+
+.source-title {
+  font-weight: bold;
+  color: #fbbf24;
+  margin-bottom: 8px;
+  font-size: 1.1em;
+}
+
+.source-subtitle {
+  color: #64748b;
+  font-size: 0.85em;
+  margin-bottom: 10px;
+}
+
+.source-items {
+  color: #cbd5e1;
+  font-size: 0.9em;
+  line-height: 1.8;
+}
+
+.item {
+  padding: 4px 0;
+}
+
+.abbreviation {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  cursor: help;
+}
+
+.flow-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.flow-stage {
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid #475569;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+}
+
+.flow-stage.active {
+  border-color: #3b82f6;
+  background: rgba(30, 41, 59, 0.95);
+}
+
+.stage-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.stage-number {
+  background: #3b82f6;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.stage-title {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #60a5fa;
+}
+
+.stage-description {
+  color: #cbd5e1;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.stage-inputs, .stage-outputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.io-label {
+  color: #94a3b8;
+  font-size: 0.85em;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.io-item {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid #3b82f6;
+  padding: 10px;
+  border-radius: 6px;
+  color: #93c5fd;
+  font-size: 0.9em;
+}
+
+.io-item.major {
+  border-color: #f97316;
+  background: rgba(249, 115, 22, 0.1);
+  color: #fb923c;
+}
+
+.arrow {
+  text-align: center;
+  color: #3b82f6;
+  font-size: 2em;
+  margin: -10px 0;
+}
+
+.models-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.model-card {
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid #475569;
+  border-radius: 8px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+
+.model-card:hover {
+  border-color: #8b5cf6;
+}
+
+.model-name {
+  color: #a78bfa;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+.model-detail {
+  color: #cbd5e1;
+  font-size: 0.9em;
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid #8b5cf6;
+  padding-left: 12px;
+}
+
+.panels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.panel-card {
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid #475569;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-number {
+  background: #8b5cf6;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.panel-title {
+  color: #c084fc;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+.panel-shows {
+  color: #94a3b8;
+  font-size: 0.85em;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.panel-content {
+  color: #cbd5e1;
+  font-size: 0.9em;
+  flex: 1;
+  line-height: 1.8;
+}
+
+.outcome-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.outcome-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.outcome-title {
+  color: #10b981;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+.outcome-description {
+  color: #cbd5e1;
+  font-size: 0.9em;
+  line-height: 1.8;
+  margin-bottom: 15px;
+}
+
+.outcome-example {
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 3px solid #10b981;
+  padding: 10px;
+  padding-left: 12px;
+  color: #a7f3d0;
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+.legend {
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid #334155;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.legend-title {
+  color: #60a5fa;
+  font-size: 1.3em;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.abbr-group {
+  background: rgba(30, 41, 59, 0.6);
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #3b82f6;
+}
+
+.abbr-title {
+  color: #60a5fa;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 0.95em;
+}
+
+.abbr-items {
+  color: #cbd5e1;
+  font-size: 0.85em;
+  line-height: 1.8;
+}
+
+.abbr-item {
+  margin: 8px 0;
+}
+
+.abbr-name {
+  color: #93c5fd;
+  font-weight: 600;
+}
+
+.abbr-def {
+  color: #94a3b8;
+  margin-left: 10px;
+}
+
+.key-insights {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.insights-title {
+  color: #60a5fa;
+  font-size: 1.3em;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.insights-list {
+  color: #cbd5e1;
+  line-height: 2;
+}
+
+.insight-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.insight-item:last-child {
+  border-bottom: none;
+}
+
+.insight-highlight {
+  color: #60a5fa;
+  font-weight: 600;
+}
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📊 MarketSensing: Complete Mental Model</h1>
+  <p class="subtitle">What Data Goes In → What Logic Processes It → What Traders Get Out</p>
+
+  <div class="key-insights">
+    <div class="insights-title">🎯 What We're Building (In Plain English)</div>
+    <div class="insights-list">
+      <div class="insight-item">
+        A <span class="insight-highlight">prediction system</span> that watches 18+ data sources to identify the best times to buy or sell oil & gas products before price moves happen.
+      </div>
+      <div class="insight-item">
+        <span class="insight-highlight">Machine learning models</span> learn from 5+ years of historical data to recognize patterns in supply, demand, and price relationships that hint at profitable opportunities.
+      </div>
+      <div class="insight-item">
+        <span class="insight-highlight">Real-time rankings</span> show traders the top 20 trade ideas RIGHT NOW, ranked by confidence and expected profit, with clear entry/exit guidance.
+      </div>
+      <div class="insight-item">
+        <span class="insight-highlight">Live tracking</span> of how each trade performs: entry price, exit price, actual profit/loss, and which features mattered most for that prediction.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔌 Data Sources We Feed Into The System</div>
+
+    <div style="margin-bottom: 20px; color: #cbd5e1;">
+      <strong>Think of these as:</strong> The eyes and ears of our prediction system. They watch what's actually happening in oil & gas markets and operations.
+    </div>
+
+    <div class="sources-grid">
+      <div class="source-box trading">
+        <div class="source-title">⚡ REAL-TIME FUTURES PRICES</div>
+        <div class="source-subtitle">Updated every second during market hours</div>
+        <div class="source-items">
+          <div class="item"><span class="abbreviation">NYMEX</span> (New York Mercantile Exchange): WTI Crude, RBOB Gasoline, Diesel futures</div>
+          <div class="item"><span class="abbreviation">TickerTech</span>: Real-time price feed for all contracts</div>
+        </div>
+      </div>
+
+      <div class="source-box trading">
+        <div class="source-title">🚢 PHYSICAL OIL MOVEMENTS</div>
+        <div class="source-subtitle">Real cargo & inventory tracking</div>
+        <div class="source-items">
+          <div class="item"><span class="abbreviation">Kpler</span>: Tanker tracking, crude flows by region</div>
+          <div class="item">Cushing, Midland, Houston hub prices via <span class="abbreviation">Platts/Argus</span></div>
+        </div>
+      </div>
+
+      <div class="source-box operations">
+        <div class="source-title">📋 SUPPLY & DEMAND WEEKLY REPORTS</div>
+        <div class="source-subtitle">Official government & industry data</div>
+        <div class="source-items">
+          <div class="item"><span class="abbreviation">EIA</span> (Energy Info Admin): US inventory, refinery runs, production</div>
+          <div class="item"><span class="abbreviation">Baker Hughes</span>: Active oil rigs (supply signal)</div>
+        </div>
+      </div>
+
+      <div class="source-box operations">
+        <div class="source-title">🏭 INTERNAL OPERATIONS</div>
+        <div class="source-subtitle">Marathon's own data</div>
+        <div class="source-items">
+          <div class="item"><span class="abbreviation">MPR</span>/MIPS: Refinery production forecasts</div>
+          <div class="item"><span class="abbreviation">Planning DB</span>: Maintenance schedules, turnarounds</div>
+          <div class="item"><span class="abbreviation">TRR</span>: Transportation costs (pipeline, barge, ship)</div>
+        </div>
+      </div>
+
+      <div class="source-box operations">
+        <div class="source-title">🌦️ WEATHER & MACRO</div>
+        <div class="source-subtitle">External factors affecting demand</div>
+        <div class="source-items">
+          <div class="item">Temperature forecasts (drives heating oil demand)</div>
+          <div class="item">Economic data: inflation, rates, stock market</div>
+        </div>
+      </div>
+
+      <div class="source-box enterprise">
+        <div class="source-title">💼 ENTERPRISE SYSTEMS</div>
+        <div class="source-subtitle">Internal tracking systems</div>
+        <div class="source-items">
+          <div class="item"><span class="abbreviation">EIS</span>: Sales forecasts by customer & region</div>
+          <div class="item"><span class="abbreviation">TMR</span>: Deal tracking, margins, costs</div>
+          <div class="item"><span class="abbreviation">RDW</span>: P&L attribution, risk positions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔄 How Data Flows Through The System</div>
+
+    <div style="margin-bottom: 20px; color: #cbd5e1;">
+      <strong>Think of this as:</strong> A factory assembly line. Raw data comes in messy. We clean it, organize it, extract useful patterns, feed to models, and output trading signals.
+    </div>
+
+    <div class="flow-diagram">
+      <div class="flow-stage active">
+        <div class="stage-header">
+          <div class="stage-number">1</div>
+          <div class="stage-title">Raw Data Ingestion</div>
+        </div>
+        <div class="stage-description">
+          Data arrives from 18+ sources at different speeds. NYMEX prices every second. EIA reports weekly. We collect everything into a "Raw Storage" layer.
+        </div>
+        <div class="io-label">📥 Inputs (18+ sources)</div>
+        <div class="stage-inputs">
+          <div class="io-item major">NYMEX Futures</div>
+          <div class="io-item major">Kpler Physical Flows</div>
+          <div class="io-item">EIA Reports</div>
+          <div class="io-item">Internal Operations</div>
+          <div class="io-item">Weather Data</div>
+        </div>
+        <div class="io-label">📤 Outputs</div>
+        <div class="stage-outputs">
+          <div class="io-item">Raw Data Lake (213+ tables)</div>
+          <div class="io-item">Validation Checks Passed</div>
+        </div>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="flow-stage active">
+        <div class="stage-header">
+          <div class="stage-number">2</div>
+          <div class="stage-title">Clean & Standardize Data</div>
+        </div>
+        <div class="stage-description">
+          Remove duplicates, handle missing values, convert to common units (e.g., USD/barrel), align timestamps across sources.
+        </div>
+        <div class="io-label">🔧 Operations</div>
+        <div class="stage-inputs">
+          <div class="io-item">Remove duplicates</div>
+          <div class="io-item">Fix data types</div>
+          <div class="io-item">Align time zones</div>
+          <div class="io-item">Handle missing values</div>
+        </div>
+        <div class="io-label">📤 Output</div>
+        <div class="stage-outputs">
+          <div class="io-item major">Clean Data (Silver Layer)</div>
+        </div>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="flow-stage active">
+        <div class="stage-header">
+          <div class="stage-number">3</div>
+          <div class="stage-title">Feature Engineering (100+ Features)</div>
+        </div>
+        <div class="stage-description">
+          Extract meaningful patterns from raw data. Example: "WTI price moved 5% in last week" or "Inventory is 15% above normal".
+        </div>
+        <div class="io-label">🎯 Types of Features (100+ total)</div>
+        <div class="stage-inputs">
+          <div class="io-item">Price trends (MA, RSI)</div>
+          <div class="io-item major">Spreads (time & location)</div>
+          <div class="io-item">Supply signals</div>
+          <div class="io-item">Demand signals</div>
+          <div class="io-item">Macro indicators</div>
+        </div>
+        <div class="io-label">📤 Output</div>
+        <div class="stage-outputs">
+          <div class="io-item major">Feature Store (ready for ML)</div>
+        </div>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="flow-stage active">
+        <div class="stage-header">
+          <div class="stage-number">4</div>
+          <div class="stage-title">ML Models Make Predictions</div>
+        </div>
+        <div class="stage-description">
+          50+ machine learning models analyze the 100+ features and predict future prices. Each trained on 5+ years of data.
+        </div>
+        <div class="io-label">🧠 Model Inputs</div>
+        <div class="stage-inputs">
+          <div class="io-item major">100+ Features</div>
+          <div class="io-item">Historical patterns</div>
+        </div>
+        <div class="io-label">📤 Output</div>
+        <div class="stage-outputs">
+          <div class="io-item major">Price Predictions</div>
+          <div class="io-item">Confidence Scores</div>
+          <div class="io-item">Feature Importance</div>
+        </div>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="flow-stage active">
+        <div class="stage-header">
+          <div class="stage-number">5</div>
+          <div class="stage-title">Signal Generation & Risk Checks</div>
+        </div>
+        <div class="stage-description">
+          Convert predictions into trading signals. Check risk limits, correlations, overlapping trades.
+        </div>
+        <div class="io-label">⚙️ Processing</div>
+        <div class="stage-inputs">
+          <div class="io-item">Apply thresholds to predictions</div>
+          <div class="io-item">Risk filters (limits, correlations)</div>
+          <div class="io-item">Rank by confidence & profit</div>
+        </div>
+        <div class="io-label">📤 Output</div>
+        <div class="stage-outputs">
+          <div class="io-item major">Signal Book (ranked ideas)</div>
+          <div class="io-item">Top 20 trades to execute</div>
+        </div>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="flow-stage active">
+        <div class="stage-header">
+          <div class="stage-number">6</div>
+          <div class="stage-title">Trader Dashboard (React App)</div>
+        </div>
+        <div class="stage-description">
+          Beautiful dashboard shows traders exactly what to do: buy/sell signals, entry/exit prices, why we think it will work.
+        </div>
+        <div class="io-label">📊 Displays</div>
+        <div class="stage-inputs">
+          <div class="io-item major">Signal Rankings</div>
+          <div class="io-item major">Spread Charts</div>
+          <div class="io-item">P&L Tracking</div>
+          <div class="io-item">Risk Exposure</div>
+        </div>
+        <div class="io-label">📤 Trader Gets</div>
+        <div class="stage-outputs">
+          <div class="io-item major">Actionable Ideas NOW</div>
+          <div class="io-item">Clear entry/exit prices</div>
+          <div class="io-item">Live execution tracking</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🧠 The ML Models (What They Do)</div>
+
+    <div style="margin-bottom: 20px; color: #cbd5e1;">
+      <strong>Simple Version:</strong> 50+ computer models trained on 5+ years of historical data to predict price movements.
+    </div>
+
+    <div class="models-grid">
+      <div class="model-card">
+        <div class="model-name">📊 LightGBM Regressor</div>
+        <div class="model-detail">
+          <strong>What it is:</strong> A machine learning algorithm that learns patterns from historical data.
+        </div>
+        <div class="model-detail">
+          <strong>What it predicts:</strong> Spread values 1, 3, 7, 14, 30, 60, 90 days in the future.
+        </div>
+        <div class="model-detail">
+          <strong>How many:</strong> 50+ models (different commodities × time horizons)
+        </div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-name">📈 Features Used (100+)</div>
+        <div class="model-detail">
+          <strong>Price patterns:</strong> 7-day moving avg, volatility, Z-scores
+        </div>
+        <div class="model-detail">
+          <strong>Supply signals:</strong> Refinery output, inventory levels vs normal
+        </div>
+        <div class="model-detail">
+          <strong>Demand signals:</strong> Sales forecasts, seasonal trends
+        </div>
+        <div class="model-detail">
+          <strong>Economic:</strong> Oil prices, USD strength, interest rates
+        </div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-name">✅ Accuracy Metrics</div>
+        <div class="model-detail">
+          <strong>Precision:</strong> 63% of BUY signals actually make money
+        </div>
+        <div class="model-detail">
+          <strong>Sharpe Ratio:</strong> 1.94x (reward per unit of risk)
+        </div>
+        <div class="model-detail">
+          <strong>P&L Delivered:</strong> $13.4M in actual profits (historically)
+        </div>
+        <div class="model-detail">
+          <strong>Covered:</strong> 12 commodities, multiple geographies
+        </div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-name">🔄 How Training Works</div>
+        <div class="model-detail">
+          <strong>Data:</strong> 5+ years of historical prices & features
+        </div>
+        <div class="model-detail">
+          <strong>Method:</strong> Walk-forward backtesting (test on data it never saw)
+        </div>
+        <div class="model-detail">
+          <strong>Retraining:</strong> Every week with latest data
+        </div>
+        <div class="model-detail">
+          <strong>Auto-retraining:</strong> If predictions drift from reality
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🖥️ What Traders See (React Dashboard - 6 Panels)</div>
+
+    <div style="margin-bottom: 20px; color: #cbd5e1;">
+      <strong>This is the user interface.</strong> Real traders look at this on their monitors. It updates in real-time.
+    </div>
+
+    <div class="panels-grid">
+      <div class="panel-card">
+        <div class="panel-number">1</div>
+        <div class="panel-title">Signals Overview</div>
+        <div class="panel-shows">Shows</div>
+        <div class="panel-content">
+          A table of all commodities with traffic lights: 🟢 BUY, 🔴 SELL, ⚪ NEUTRAL
+          <br><br>
+          Shows confidence: 65% means "we're 65% sure"
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-number">2</div>
+        <div class="panel-title">Spread View</div>
+        <div class="panel-shows">Shows</div>
+        <div class="panel-content">
+          Chart showing price difference between two locations/contracts:
+          <br><br>
+          Gray = past prices
+          <br>Colored = what we predict
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-number">3</div>
+        <div class="panel-title">Market Signal Details</div>
+        <div class="panel-shows">Shows</div>
+        <div class="panel-content">
+          Best trade ideas TODAY with entry date/price, exit date/price, expected profit
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-number">4</div>
+        <div class="panel-title">Forecast Distribution</div>
+        <div class="panel-shows">Shows</div>
+        <div class="panel-content">
+          "80% chance price lands in this range"
+          <br><br>
+          Green = profitable, Red = loss
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-number">5</div>
+        <div class="panel-title">Feature Impact (Why)</div>
+        <div class="panel-shows">Shows</div>
+        <div class="panel-content">
+          "Here's what made the model predict this trade"
+          <br><br>
+          Transparency: Inventory +50%, Momentum +40%, Seasonal -15%
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-number">6</div>
+        <div class="panel-title">P&L Attribution</div>
+        <div class="panel-shows">Shows</div>
+        <div class="panel-content">
+          "How much money we made this month"
+          <br><br>
+          By commodity: WTI +$2.3M, RBOB +$1.1M
+          <br>Total: +$4.2M YTD
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">💰 What Traders Actually Get (Business Outcomes)</div>
+
+    <div style="margin-bottom: 20px; color: #cbd5e1;">
+      <strong>In business terms:</strong> Why should a trader care?
+    </div>
+
+    <div class="outcome-grid">
+      <div class="outcome-card">
+        <div class="outcome-title">🎯 Ranked Trade Ideas (Top 20 NOW)</div>
+        <div class="outcome-description">
+          Instead of analyzing 1,000+ possible trades manually, get top 20 ranked by expected profit.
+        </div>
+        <div class="outcome-example">
+          "Buy WTI Midland-Cushing spread, enter $1.23, exit $0.95, expected profit $280K in 5 days"
+        </div>
+      </div>
+
+      <div class="outcome-card">
+        <div class="outcome-title">⚡ Real-Time Decision Support</div>
+        <div class="outcome-description">
+          Dashboard updates every minute. See opportunities as soon as they appear.
+        </div>
+        <div class="outcome-example">
+          Market condition changed at 2:47 PM. Signal shifted BUY. Execute immediately.
+        </div>
+      </div>
+
+      <div class="outcome-card">
+        <div class="outcome-title">📊 Clear Entry/Exit Prices</div>
+        <div class="outcome-description">
+          ML says: "Buy here, sell here". Removes emotion & guesswork.
+        </div>
+        <div class="outcome-example">
+          "WTI: Enter $82.45, Exit $84.10 (when profit target hit)"
+        </div>
+      </div>
+
+      <div class="outcome-card">
+        <div class="outcome-title">🛡️ Risk Control</div>
+        <div class="outcome-description">
+          System won't suggest trades breaking risk limits. Protects against catastrophic losses.
+        </div>
+        <div class="outcome-example">
+          "Can't buy WTI - already $15M position, limit $20M, only $5M headroom"
+        </div>
+      </div>
+
+      <div class="outcome-card">
+        <div class="outcome-title">💡 Transparency (Why & How Much)</div>
+        <div class="outcome-description">
+          See which data points drove each prediction. More informed decisions.
+        </div>
+        <div class="outcome-example">
+          "Signal 63% from inventory surprise, 22% from momentum, 15% from seasonal"
+        </div>
+      </div>
+
+      <div class="outcome-card">
+        <div class="outcome-title">📈 Live P&L Tracking</div>
+        <div class="outcome-description">
+          See exactly how much money each strategy makes. Prove ROI in real-time.
+        </div>
+        <div class="outcome-example">
+          "Time arbitrage: +$2.3M YTD. Geo arbitrage: +$1.8M. Sharpe: 1.94x"
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="legend">
+      <div class="legend-title">📚 Complete Abbreviations & Terminology</div>
+
+      <div class="legend-grid">
+        <div class="abbr-group">
+          <div class="abbr-title">Market & Trading</div>
+          <div class="abbr-items">
+            <div class="abbr-item">
+              <span class="abbr-name">NYMEX:</span>
+              <span class="abbr-def">New York Mercantile Exchange - where oil futures trade</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">WTI:</span>
+              <span class="abbr-def">West Texas Intermediate - type of crude oil (standard US grade)</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">RBOB:</span>
+              <span class="abbr-def">Reformulated Gasoline Blendstock - gasoline futures</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">ULSD / HO:</span>
+              <span class="abbr-def">Ultra Low Sulfur Diesel / Heating Oil - diesel futures</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Spread:</span>
+              <span class="abbr-def">Price difference between two products/locations (e.g., Midland vs Cushing)</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">MtM:</span>
+              <span class="abbr-def">Mark-to-Market - current profit/loss on open position</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="abbr-group">
+          <div class="abbr-title">Data Sources & Systems</div>
+          <div class="abbr-items">
+            <div class="abbr-item">
+              <span class="abbr-name">EIA:</span>
+              <span class="abbr-def">US Energy Information Administration - official energy data</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">MPR / MIPS:</span>
+              <span class="abbr-def">Marathon Petroleum forecasts - internal production & sales</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Kpler:</span>
+              <span class="abbr-def">Vessel tracking - real tanker flows and movements</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">TMR:</span>
+              <span class="abbr-def">Trading Management System - deal tracking and execution records</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">RDW:</span>
+              <span class="abbr-def">Risk Data Warehouse - P&L tracking and positions</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">TRR:</span>
+              <span class="abbr-def">Transportation Rate database - shipping cost data</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="abbr-group">
+          <div class="abbr-title">Technical & ML Terms</div>
+          <div class="abbr-items">
+            <div class="abbr-item">
+              <span class="abbr-name">LightGBM:</span>
+              <span class="abbr-def">Fast ML algorithm - learns patterns from historical data</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Feature:</span>
+              <span class="abbr-def">Meaningful data point the model uses ("inventory +5%", "price moved 2 sigma")</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Sharpe Ratio:</span>
+              <span class="abbr-def">Reward per unit of risk (1.94x = earning $1.94 for every $1 of risk)</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Z-Score:</span>
+              <span class="abbr-def">Measure of how unusual something is (3.0 = very unusual)</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Precision:</span>
+              <span class="abbr-def">Percentage of BUY signals that make money (63% of ours do)</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Backtesting:</span>
+              <span class="abbr-def">Testing strategy on historical data to see if it would've made money</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="abbr-group">
+          <div class="abbr-title">Strategy Types</div>
+          <div class="abbr-items">
+            <div class="abbr-item">
+              <span class="abbr-name">Time Arbitrage:</span>
+              <span class="abbr-def">Buy near-term, sell far-term to profit from price curve differences</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Geo Arbitrage:</span>
+              <span class="abbr-def">Buy in one location, sell in another for regional price differences</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Crack Spread:</span>
+              <span class="abbr-def">Buy 3 crude, sell 2 gasoline + 1 diesel (refinery margin trade)</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Contango:</span>
+              <span class="abbr-def">Market where future prices higher than spot (storage profitable)</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Backwardation:</span>
+              <span class="abbr-def">Market where future prices lower than spot (scarcity signal)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="abbr-group">
+          <div class="abbr-title">Infrastructure & Cloud</div>
+          <div class="abbr-items">
+            <div class="abbr-item">
+              <span class="abbr-name">Azure:</span>
+              <span class="abbr-def">Microsoft cloud - where our system runs</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Databricks:</span>
+              <span class="abbr-def">Big data platform - runs ML models and feature engineering</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">Delta Lake:</span>
+              <span class="abbr-def">Data storage format - organized data with full history</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">PostgreSQL:</span>
+              <span class="abbr-def">Database for fast lookups (signals, P&L)</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">FastAPI:</span>
+              <span class="abbr-def">Backend server that delivers signals to dashboard</span>
+            </div>
+            <div class="abbr-item">
+              <span class="abbr-name">React.js:</span>
+              <span class="abbr-def">JavaScript framework - the interactive dashboard traders use</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1)); border: 2px solid #10b981;">
+    <div class="section-title" style="color: #10b981; border-bottom-color: #10b981;">✅ Bottom Line: What This System Does</div>
+
+    <div style="color: #cbd5e1; line-height: 2; font-size: 1.05em;">
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+        <span style="color: #10b981; font-weight: bold;">Watches:</span> 18+ data sources (prices, supply, demand, weather, internal operations)
+      </div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+        <span style="color: #10b981; font-weight: bold;">Learns from:</span> 5+ years of historical patterns (what price movements preceded profitable trades)
+      </div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+        <span style="color: #10b981; font-weight: bold;">Predicts:</span> Future price movements (next 1-90 days)
+      </div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+        <span style="color: #10b981; font-weight: bold;">Ranks:</span> Top 20 trade ideas by expected profit and risk
+      </div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+        <span style="color: #10b981; font-weight: bold;">Shows:</span> Interactive dashboard with signals, charts, entry/exit prices, feature explanations
+      </div>
+      <div style="padding: 10px 0;">
+        <span style="color: #10b981; font-weight: bold;">Results:</span> $13.4M in actual profits | 63% of signals make money | 1.94x Sharpe ratio
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

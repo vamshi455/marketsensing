@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarketSensing: Business Data Flow</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .graph-container {
+      flex: 1;
+      position: relative;
+      background: rgba(15, 23, 42, 0.9);
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .flow-wrapper {
+      padding: 40px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 60px;
+      min-width: min-content;
+    }
+
+    .flow-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      color: #60a5fa;
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #3b82f6;
+      text-align: center;
+      width: 100%;
+      min-width: 220px;
+    }
+
+    .sources-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding-right: 10px;
+      flex-shrink: 0;
+      width: 240px;
+    }
+
+    .source-box {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(249, 115, 22, 0.05));
+      border: 2px solid #f97316;
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .source-box:hover {
+      border-color: #fb923c;
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.4), rgba(249, 115, 22, 0.1));
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(249, 115, 22, 0.2);
+    }
+
+    .source-name {
+      color: #fb923c;
+      font-weight: bold;
+      font-size: 0.95em;
+      margin-bottom: 6px;
+    }
+
+    .source-desc {
+      color: #cbd5e1;
+      font-size: 0.75em;
+      line-height: 1.4;
+    }
+
+    .arrow {
+      font-size: 2.5em;
+      color: #3b82f6;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .models-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-shrink: 0;
+      width: 260px;
+    }
+
+    .model-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .model-box:hover {
+      border-color: #6ee7b7;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(16, 185, 129, 0.1));
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+    }
+
+    .model-name {
+      color: #6ee7b7;
+      font-weight: bold;
+      font-size: 0.95em;
+      margin-bottom: 6px;
+    }
+
+    .model-desc {
+      color: #cbd5e1;
+      font-size: 0.75em;
+      line-height: 1.4;
+    }
+
+    .output-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-shrink: 0;
+      width: 240px;
+    }
+
+    .output-box {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.05));
+      border: 2px solid #06b6d4;
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .output-box:hover {
+      border-color: #67e8f9;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(6, 182, 212, 0.1));
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(6, 182, 212, 0.2);
+    }
+
+    .output-label {
+      color: #94a3b8;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .output-value {
+      color: #67e8f9;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+
+    .panel {
+      width: 380px;
+      background: rgba(15, 23, 42, 0.95);
+      border-left: 3px solid #334155;
+      padding: 30px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    .panel-header {
+      margin-bottom: 20px;
+      border-bottom: 2px solid #334155;
+      padding-bottom: 15px;
+    }
+
+    .panel-title {
+      color: #60a5fa;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .panel-type {
+      color: #94a3b8;
+      font-size: 0.85em;
+      text-transform: uppercase;
+    }
+
+    .panel-section {
+      margin-bottom: 20px;
+    }
+
+    .panel-section-title {
+      color: #3b82f6;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.85em;
+      margin-bottom: 10px;
+    }
+
+    .panel-text {
+      color: #cbd5e1;
+      font-size: 0.9em;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .panel-list {
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .panel-list li {
+      color: #cbd5e1;
+      font-size: 0.9em;
+      margin: 8px 0;
+      padding-left: 15px;
+      position: relative;
+    }
+
+    .panel-list li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #3b82f6;
+      font-weight: bold;
+    }
+
+    .panel-stat {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 3px solid #3b82f6;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+
+    .panel-stat-label {
+      color: #94a3b8;
+      font-size: 0.8em;
+      text-transform: uppercase;
+    }
+
+    .panel-stat-value {
+      color: #60a5fa;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #94a3b8;
+      padding: 40px 20px;
+      font-size: 0.95em;
+      line-height: 1.8;
+    }
+
+    ::-webkit-scrollbar {
+      height: 8px;
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(51, 65, 85, 0.2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.5);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.7);
+    }
+  </style>
+</head>
+<body>
+
+<div class="graph-container">
+  <div class="flow-wrapper" id="flowWrapper">
+    <!-- SOURCES -->
+    <div class="flow-section">
+      <div class="section-title">📊 Data Sources (18+)</div>
+      <div class="sources-column" id="sourcesColumn"></div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <!-- MODELS -->
+    <div class="flow-section">
+      <div class="section-title">🧠 ML Models</div>
+      <div class="models-column" id="modelsColumn"></div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <!-- OUTPUTS -->
+    <div class="flow-section">
+      <div class="section-title">📈 Trader Signals</div>
+      <div class="output-column" id="outputColumn"></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div id="panelContent" class="empty-state">
+    Click any source or model to learn more
+  </div>
+</div>
+
+<script>
+const sources = [
+  {
+    id: "nymex",
+    name: "NYMEX",
+    desc: "WTI, RBOB, ULSD futures. Real-time prices.",
+    category: "Trading Data",
+    frequency: "Every second",
+    impact: "Heartbeat of the system.",
+    usedBy: ["Time Spread Model", "Price Trends Model"]
+  },
+  {
+    id: "kpler",
+    name: "Kpler",
+    desc: "Real tanker tracking. Physical oil flows by region.",
+    category: "Physical Flows",
+    frequency: "Daily updates",
+    impact: "Early supply signal.",
+    usedBy: ["Supply Shock Model", "Geographic Arbitrage Model"]
+  },
+  {
+    id: "eia",
+    name: "EIA",
+    desc: "Weekly inventory, production, refinery runs.",
+    category: "Inventory Data",
+    frequency: "Weekly (Wed 10:30am)",
+    impact: "Market-moving reports.",
+    usedBy: ["Inventory Surprise Model", "Seasonal Model"]
+  },
+  {
+    id: "mpr",
+    name: "MPR / MIPS",
+    desc: "Marathon internal forecasts & sales predictions.",
+    category: "Internal Operations",
+    frequency: "Daily",
+    impact: "Only we have this data.",
+    usedBy: ["Internal Supply Model"]
+  },
+  {
+    id: "trr",
+    name: "TRR",
+    desc: "Transportation costs: pipeline, barge, vessel.",
+    category: "Logistics",
+    frequency: "Daily",
+    impact: "Affects profitable spreads.",
+    usedBy: ["Geographic Arbitrage Model"]
+  },
+  {
+    id: "weather",
+    name: "Weather Source",
+    desc: "Temperature, precipitation, wind data.",
+    category: "External Factors",
+    frequency: "Real-time",
+    impact: "Drives heating oil demand.",
+    usedBy: ["Demand Model"]
+  },
+  {
+    id: "planning",
+    name: "Planning DB",
+    desc: "Refinery maintenance schedules & turnarounds.",
+    category: "Internal Operations",
+    frequency: "Weeks ahead",
+    impact: "Know supply shocks early.",
+    usedBy: ["Supply Shock Model"]
+  },
+  {
+    id: "eis",
+    name: "EIS",
+    desc: "Internal sales forecasts by customer & product.",
+    category: "Internal Sales",
+    frequency: "Daily/Weekly",
+    impact: "Our demand signals.",
+    usedBy: ["Demand Model", "Volume Model"]
+  },
+  {
+    id: "tmr",
+    name: "TMR",
+    desc: "Internal deal tracking & trade history.",
+    category: "Execution History",
+    frequency: "Real-time",
+    impact: "Backtesting & validation.",
+    usedBy: ["Backtesting Engine"]
+  },
+  {
+    id: "rdw",
+    name: "RDW",
+    desc: "Risk positions, P&L, portfolio constraints.",
+    category: "Risk Tracking",
+    frequency: "Real-time",
+    impact: "Risk filters prevent losses.",
+    usedBy: ["Risk Filter Model"]
+  },
+  {
+    id: "iir",
+    name: "IIR",
+    desc: "Market intelligence & news feeds.",
+    category: "Market Intel",
+    frequency: "Daily",
+    impact: "Sentiment context.",
+    usedBy: ["Sentiment Model"]
+  },
+  {
+    id: "genscape",
+    name: "Genscape",
+    desc: "Real-time refinery operations data.",
+    category: "Operational Intel",
+    frequency: "Real-time",
+    impact: "Know refinery runs early.",
+    usedBy: ["Refinery Run Model"]
+  },
+  {
+    id: "woodmac",
+    name: "WoodMac",
+    desc: "Long-term commodity forecasts.",
+    category: "Market Analysis",
+    frequency: "Weekly/Monthly",
+    impact: "Macro trends context.",
+    usedBy: ["Trend Model"]
+  },
+  {
+    id: "enverus",
+    name: "Enverus",
+    desc: "Upstream production & rig count trends.",
+    category: "Supply Chain",
+    frequency: "Weekly",
+    impact: "Supply outlook signals.",
+    usedBy: ["Supply Model"]
+  },
+  {
+    id: "cftc",
+    name: "CFTC",
+    desc: "Speculative positioning reports.",
+    category: "Market Positioning",
+    frequency: "Weekly",
+    impact: "Big trader sentiment.",
+    usedBy: ["Positioning Model"]
+  },
+  {
+    id: "argus",
+    name: "Platts / Argus",
+    desc: "Physical hub prices: Midland, Cushing, Houston.",
+    category: "Physical Prices",
+    frequency: "Daily",
+    impact: "Geographic basis signals.",
+    usedBy: ["Geographic Arbitrage Model"]
+  }
+];
+
+const models = [
+  {
+    id: "lgb_time",
+    name: "Time Spread Model",
+    desc: "Front-month vs 3/6/12-month prices",
+    outputs: "Buy/Sell contango/backwardation",
+    accuracy: "63% precision",
+    sources: ["NYMEX", "EIA", "Weather"]
+  },
+  {
+    id: "lgb_geo",
+    name: "Geographic Arbitrage",
+    desc: "Midland vs Cushing vs Houston",
+    outputs: "Which hub to buy/sell",
+    accuracy: "58% precision",
+    sources: ["Kpler", "Argus", "TRR"]
+  },
+  {
+    id: "lgb_supply",
+    name: "Supply Shock Model",
+    desc: "Predicts supply tightening 1-3 weeks ahead",
+    outputs: "Supply shock signals",
+    accuracy: "71% precision",
+    sources: ["Genscape", "Enverus", "Planning DB", "EIA"]
+  },
+  {
+    id: "lgb_demand",
+    name: "Demand Model",
+    desc: "Predicts demand surge/decline",
+    outputs: "Demand signals",
+    accuracy: "65% precision",
+    sources: ["Weather", "EIS", "EIA"]
+  },
+  {
+    id: "risk_filter",
+    name: "Risk Filter",
+    desc: "Hard stops on position size & correlation",
+    outputs: "Approved signals only",
+    accuracy: "99.9% (hard stops)",
+    sources: ["RDW"]
+  },
+  {
+    id: "orchestration",
+    name: "Orchestration",
+    desc: "Merges 50+ model predictions. Ranks top 20.",
+    outputs: "Signal Book",
+    accuracy: "Sharpe 1.94x",
+    sources: ["All Models"]
+  }
+];
+
+const traders = [
+  { label: "Signal ID", value: "UUID + timestamp" },
+  { label: "Trade Idea", value: "Buy/Sell which spreads" },
+  { label: "Entry Price", value: "Buy/Sell today" },
+  { label: "Exit Price", value: "Close 1-90 days" },
+  { label: "Expected P&L", value: "$210K avg" },
+  { label: "Confidence", value: "63% probability" }
+];
+
+// Render sources
+function renderSources() {
+  const col = document.getElementById('sourcesColumn');
+  col.innerHTML = sources.map(s => `
+    <div class="source-box" onclick="showSourceDetails('${s.id}')">
+      <div class="source-name">${s.name}</div>
+      <div class="source-desc">${s.desc}</div>
+    </div>
+  `).join('');
+}
+
+// Render models
+function renderModels() {
+  const col = document.getElementById('modelsColumn');
+  col.innerHTML = models.map(m => `
+    <div class="model-box" onclick="showModelDetails('${m.id}')">
+      <div class="model-name">${m.name}</div>
+      <div class="model-desc">${m.desc}</div>
+    </div>
+  `).join('');
+}
+
+// Render output
+function renderOutput() {
+  const col = document.getElementById('outputColumn');
+  col.innerHTML = traders.map((t, i) => `
+    <div class="output-box">
+      <div class="output-label">${t.label}</div>
+      <div class="output-value">${t.value}</div>
+    </div>
+  `).join('');
+}
+
+// Show source details
+function showSourceDetails(id) {
+  const source = sources.find(s => s.id === id);
+  if (!source) return;
+
+  const panel = document.getElementById('panelContent');
+  panel.innerHTML = `
+    <div class="panel-header">
+      <div class="panel-title">${source.name}</div>
+      <div class="panel-type">${source.category}</div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">What We Get</div>
+      <div class="panel-text">${source.desc}</div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Update Frequency</div>
+      <div class="panel-stat">
+        <div class="panel-stat-label">How Often</div>
+        <div class="panel-stat-value">${source.frequency}</div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Business Impact</div>
+      <div class="panel-text">${source.impact}</div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Used By These Models</div>
+      <ul class="panel-list">
+        ${source.usedBy.map(m => `<li>${m}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+// Show model details
+function showModelDetails(id) {
+  const model = models.find(m => m.id === id);
+  if (!model) return;
+
+  const panel = document.getElementById('panelContent');
+  panel.innerHTML = `
+    <div class="panel-header">
+      <div class="panel-title">${model.name}</div>
+      <div class="panel-type">LightGBM Regressor</div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">What It Does</div>
+      <div class="panel-text">${model.desc}</div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Outputs</div>
+      <div class="panel-stat">
+        <div class="panel-stat-label">Signal Type</div>
+        <div class="panel-stat-value">${model.outputs}</div>
+      </div>
+      <div class="panel-stat">
+        <div class="panel-stat-label">Accuracy</div>
+        <div class="panel-stat-value">${model.accuracy}</div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Data Sources</div>
+      <ul class="panel-list">
+        ${model.sources.map(s => `<li>${s}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+// Initialize
+renderSources();
+renderModels();
+renderOutput();
+</script>
+</body>
+</html>
