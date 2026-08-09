@@ -46,3 +46,4 @@ htmlcov/
 
 # Build
 *.whl
+docs/Market_Sensing_Sources.xlsx
