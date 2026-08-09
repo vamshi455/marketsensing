@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Production-grade ML-driven trading signals platform for Marathon Petroleum. Ingests data from 18+ sources (213+ tables), generates LightGBM-based predictions for 12 commodities across 1-90+ day horizons, and delivers signals via a React.js dashboard replacing Power BI.
+Production-grade ML-driven trading signals platform for a US petroleum trading organization. Ingests data from 18+ sources (213+ tables), generates LightGBM-based predictions for 12 commodities across 1-90+ day horizons, and delivers signals via a React.js dashboard for real-time decision-making.
 
 **Core Metrics**:
 - **Historical P&L**: $13.4MM realized profits (63% directional precision)
@@ -141,7 +141,7 @@ Production-grade ML-driven trading signals platform for Marathon Petroleum. Inge
 ### Operational Intelligence
 4. **EIA** — Weekly/daily inventory, production, refinery runs
 5. **Planning DB** — Refinery schedules, turnarounds, capacity planning
-6. **MPR / MIPS** — Marathon internal production/sales forecasts
+6. **Internal Production Forecasts** — Organization internal production/sales forecasts
 7. **TRR** — Transportation rates (barge, pipeline, vessel)
 
 ### Derivative & Reference Data
@@ -497,7 +497,7 @@ src/monitoring/
 
 ## Deployment & Infrastructure
 
-### Cloud: Azure (Marathon's existing stack)
+### Cloud: Azure (Standard Cloud Infrastructure)
 
 ```
 Azure Data Factory       Azure Databricks        Azure SQL Server
@@ -576,7 +576,7 @@ spec:
 ## Security & Compliance
 
 ### Authentication & Authorization
-- **AD/LDAP** for user identity (Marathon AD groups)
+- **LDAP/OAuth** for user identity and access control
 - **OAuth 2.0** for API access (service accounts)
 - **RBAC**: Trader, Analyst, Administrator roles
 - **API key rotation**: Quarterly

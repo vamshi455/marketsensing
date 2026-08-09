@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A **market-sensing and trading-signal platform** for a US-focused oil & gas trading organization. The system generates actionable **Buy/Sell signals** across three arbitrage dimensions:
+A **market-sensing and trading-signal platform** for a US-focused petroleum trading organization. The system generates actionable **Buy/Sell signals** across three arbitrage dimensions:
 
 - **Time arbitrage** — futures curve shape (contango/backwardation)
 - **Location arbitrage** — price differences between US physical hubs

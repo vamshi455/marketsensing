@@ -27,7 +27,7 @@ Market Sensing enables timely strategic decisions, enhancing adaptability and ma
 
 ## Slide 3 — Market Sensing | Road Map
 
-*(Marathon-branded header with MARATHON logo.)*
+*(Organization-branded header with company logo.)*
 
 Timeline columns: **1H 25 · 2H 25 · 1H 26 · 2H 26**
 
@@ -118,7 +118,7 @@ An ML model developed by BCG was delivered in the Dev environment. **3Q25 requir
 
 **Dashboard screenshot contents (right):**
 
-Left nav rail (Marathon logo): SIGNAL SUMMARY · *(chart icon)* · *(list icon)* · BACKTESTING · *(icons)* · → 
+Left nav rail (company logo): SIGNAL SUMMARY · *(chart icon)* · *(list icon)* · BACKTESTING · *(icons)* · → 
 
 *Panel 1 — "Signals Overview for Model Run Date: 3/30/2026"*
 Filters: Commodity = All · Spread = All · Model Run Date = Last Run

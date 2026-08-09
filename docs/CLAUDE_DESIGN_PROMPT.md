@@ -6,7 +6,7 @@ Use this prompt with Claude Design to visualize the MarketSensing platform archi
 
 ## System Overview
 
-**MarketSensing** is a US oil & gas trading signal platform for Marathon Petroleum. It generates actionable Buy/Sell signals across three arbitrage dimensions:
+**MarketSensing** is a US oil & gas trading signal platform for a petroleum trading organization. It generates actionable Buy/Sell signals across three arbitrage dimensions:
 
 1. **Time Arbitrage** — Futures curve shape (contango/backwardation)
 2. **Location Arbitrage** — Price differences between US physical hubs (Midland, Cushing, Houston)
@@ -32,7 +32,7 @@ Use this prompt with Claude Design to visualize the MarketSensing platform archi
 **Inventory & Supply:**
 - EIA (weekly inventory, production, refinery runs) — Wednesday 10:30am
 - Enverus (upstream rig counts) — weekly
-- Planning DB (Marathon refinery turnarounds) — weeks ahead
+- Maintenance Schedule DB (refinery turnarounds) — weeks ahead
 
 **Internal Operations (Competitive Advantage):**
 - MPR/MIPS (production forecasts & sales predictions) — daily
