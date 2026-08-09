@@ -1,340 +1,170 @@
-"""
-FastAPI application for MarketSensing platform.
+"""FastAPI application with hexagonal architecture."""
+import os
 
-Serves signals, spreads, forecasts, and analytics to frontend and traders.
-"""
-
-from contextlib import asynccontextmanager
-from typing import List
-
-import structlog
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZIPMiddleware
-from fastapi.responses import JSONResponse
 
-from src.models import Signal, SignalState
+from src.application.dto.signal_dto import GenerateSignalRequest, GenerateSignalResponse
+from src.infrastructure.container import Container
+from src.infrastructure.database import Database
 
-logger = structlog.get_logger()
-
-
-# Dependency for auth (placeholder)
-async def verify_api_key(api_key: str = None):
-    """Verify API key from header."""
-    # TODO: Implement AD/OAuth verification
-    if api_key is None:
-        raise HTTPException(status_code=401, detail="Missing API key")
-    return api_key
+# Initialize database and container
+DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost/marketsensing")
+db = Database(DB_URL)
+container = None
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Manage app startup and shutdown."""
-    # Startup
-    logger.info("app_startup")
-    # TODO: Initialize database connections, cache, etc.
-    yield
-    # Shutdown
-    logger.info("app_shutdown")
-
-
-# Create FastAPI app
 app = FastAPI(
-    title="MarketSensing API",
-    description="Trading signals platform for Marathon Petroleum",
-    version="1.0.0",
-    lifespan=lifespan,
+    title="MarketSensing Signal API",
+    description="Trading signal generation platform",
+    version="0.1.0",
 )
 
-# Add CORS middleware
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8080"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Add gzip compression
-app.add_middleware(GZIPMiddleware, minimum_size=1000)
+
+@app.on_event("startup")
+async def startup():
+    """Initialize database and container on startup."""
+    global container
+    await db.connect()
+    await db.initialize_schema()
+    container = Container(db)
+    print("✓ Database connected and initialized")
+    print("✓ Container wired")
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    """Close database on shutdown."""
+    await db.disconnect()
+    print("✓ Database disconnected")
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {
-        "status": "healthy",
-        "version": "1.0.0",
-        "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
-    }
+    return {"status": "ok", "version": "0.1.0"}
+
+
+@app.post("/signals/generate", response_model=GenerateSignalResponse)
+async def generate_signal(request: GenerateSignalRequest):
+    """
+    Generate a trading signal.
+
+    - **strategy_id**: Strategy identifier (e.g., "spread_midland_cushing")
+    - **long_instrument**: Long leg (e.g., "WTI_MIDLAND")
+    - **short_instrument**: Short leg (e.g., "WTI_CUSHING")
+    - **z_score_threshold**: Entry threshold in standard deviations (default 2.0)
+    """
+    try:
+        use_case = container.generate_signal_use_case()
+        response = await use_case.execute(request)
+        return response
+    except Exception as e:
+        container.logger.error(f"Signal generation failed: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/signals/latest")
-async def get_latest_signals(
-    commodity: str = None,
-    limit: int = 100,
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get latest signals across all commodities.
-
-    Query Parameters:
-        commodity: Filter by specific commodity (optional)
-        limit: Max results (default 100)
-
-    Returns:
-        List of Signal objects
-    """
-    # TODO: Query Signal Book from PostgreSQL
-    logger.info("get_latest_signals", commodity=commodity, limit=limit)
-    return {
-        "signals": [],
-        "count": 0,
-        "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
-    }
-
-
-@app.get("/signal-book")
-async def get_signal_book(
-    commodity: str = None,
-    spread: str = None,
-    model_run_date: str = None,
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get full ranked Signal Book.
-
-    Query Parameters:
-        commodity: Filter by commodity
-        spread: Filter by spread type (time, geo, crack)
-        model_run_date: Filter by model run date (YYYY-MM-DD)
-
-    Returns:
-        Ranked list of trade ideas with full details
-    """
-    # TODO: Implement ranking logic and filtering
-    logger.info(
-        "get_signal_book",
-        commodity=commodity,
-        spread=spread,
-        model_run_date=model_run_date,
-    )
-    return {
-        "signals": [],
-        "count": 0,
-        "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
-    }
-
-
-@app.get("/spreads/{commodity}/{contract}")
-async def get_spreads(
-    commodity: str,
-    contract: str,
-    days: int = 90,
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get historical and forecasted spreads for a commodity/contract.
-
-    Path Parameters:
-        commodity: Commodity ID (e.g., 'LT', 'WTI_CL_F1')
-        contract: Contract month (e.g., 'May2026', 'Jun2026_Jul2026')
-
-    Query Parameters:
-        days: Lookback window in days (default 90)
-
-    Returns:
-        Time series with historical (gray) and forecasted (colored) spreads
-    """
-    # TODO: Query spread view from PostgreSQL
-    logger.info("get_spreads", commodity=commodity, contract=contract, days=days)
-    return {
-        "commodity": commodity,
-        "contract": contract,
-        "data": [],
-        "historical_end_date": None,
-        "forecast_start_date": None,
-    }
-
-
-@app.get("/forecasts/{commodity}")
-async def get_forecasts(
-    commodity: str,
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get LightGBM regression predictions for a commodity.
-
-    Path Parameters:
-        commodity: Commodity ID
-
-    Returns:
-        Spread predictions by contract and leap duration
-    """
-    # TODO: Load predictions from model registry or cache
-    logger.info("get_forecasts", commodity=commodity)
-    return {
-        "commodity": commodity,
-        "predictions": [],
-        "model_version": None,
-        "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
-    }
-
-
-@app.get("/features/{commodity}/{contract}")
-async def get_features(
-    commodity: str,
-    contract: str,
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get feature values used in model prediction.
-
-    Path Parameters:
-        commodity: Commodity ID
-        contract: Contract month
-
-    Returns:
-        Dictionary of feature name → value (100+ features)
-    """
-    # TODO: Query Feature Store
-    logger.info("get_features", commodity=commodity, contract=contract)
-    return {
-        "commodity": commodity,
-        "contract": contract,
-        "features": {},
-        "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
-    }
-
-
-@app.get("/models/performance")
-async def get_model_performance(
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get model backtesting metrics and performance.
-
-    Returns:
-        Precision, Recall, F1-score, R², MAE, RMSE by commodity and model
-    """
-    # TODO: Query MLflow model registry and backtesting results
-    logger.info("get_model_performance")
-    return {
-        "models": [],
-        "metrics": {},
-    }
-
-
-@app.get("/pnl/attribution")
-async def get_pnl_attribution(
-    commodity: str = None,
-    product: str = None,
-    start_date: str = None,
-    end_date: str = None,
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get P&L attribution by product and strategy.
-
-    Query Parameters:
-        commodity: Filter by commodity
-        product: Filter by product (e.g., 'HOGO', 'LT')
-        start_date: Start date (YYYY-MM-DD)
-        end_date: End date (YYYY-MM-DD)
-
-    Returns:
-        Monthly MtM values and cumulative P&L
-    """
-    # TODO: Query P&L attribution table
-    logger.info(
-        "get_pnl_attribution",
-        commodity=commodity,
-        product=product,
-        start_date=start_date,
-        end_date=end_date,
-    )
-    return {
-        "monthly_pnl": [],
-        "product_breakdown": {},
-        "total_pnl": 0.0,
-    }
-
-
-@app.get("/backtesting/results")
-async def get_backtesting_results(
-    strategy_id: str = None,
-    commodity: str = None,
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get backtesting results for signals.
-
-    Query Parameters:
-        strategy_id: Filter by strategy
-        commodity: Filter by commodity
-
-    Returns:
-        Precision, recall, F1-score, Sharpe ratio, max drawdown
-    """
-    # TODO: Query backtesting results
-    logger.info(
-        "get_backtesting_results",
-        strategy_id=strategy_id,
-        commodity=commodity,
-    )
-    return {
-        "results": [],
-    }
-
-
-@app.get("/config/strategies")
-async def get_strategies_config(
-    api_key: str = Depends(verify_api_key),
-):
-    """
-    Get active strategy configurations (read-only).
-
-    Returns:
-        Strategy definitions and parameters from YAML config
-    """
-    # TODO: Load from config/strategies.yaml
-    logger.info("get_strategies_config")
-    return {
-        "strategies": {},
-    }
-
-
-@app.websocket("/ws/signals")
-async def websocket_signals(websocket):
-    """
-    WebSocket endpoint for real-time signal updates.
-
-    Clients connect and receive signal updates as they're generated.
-    """
-    await websocket.accept()
-    logger.info("websocket_client_connected")
+async def get_latest_signals(limit: int = 10):
+    """Fetch the most recent signals."""
     try:
-        while True:
-            # TODO: Listen to signal generation pipeline
-            # Send updates to client in real-time
-            pass
+        signals = await container.signal_repo.get_latest_signals(limit)
+        return {
+            "signals": [
+                {
+                    "strategy": s.strategy_id,
+                    "pair": f"{s.instrument_long}/{s.instrument_short}",
+                    "action": s.action,
+                    "confidence": s.confidence,
+                    "timestamp": s.timestamp.isoformat(),
+                    "rationale": s.rationale,
+                }
+                for s in signals
+            ]
+        }
     except Exception as e:
-        logger.error("websocket_error", error=str(e))
-    finally:
-        logger.info("websocket_client_disconnected")
+        container.logger.error(f"Failed to fetch signals: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch signals")
 
 
-@app.exception_handler(Exception)
-async def global_exception_handler(request, exc):
-    """Global error handler."""
-    logger.error("unhandled_exception", error=str(exc))
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal server error"},
-    )
+@app.get("/signals/strategy/{strategy_id}")
+async def get_signals_by_strategy(strategy_id: str, limit: int = 10):
+    """Fetch signals for a specific strategy."""
+    try:
+        signals = await container.signal_repo.get_signals_by_strategy(strategy_id, limit)
+        return {
+            "strategy": strategy_id,
+            "count": len(signals),
+            "signals": [
+                {
+                    "action": s.action,
+                    "confidence": s.confidence,
+                    "timestamp": s.timestamp.isoformat(),
+                    "rationale": s.rationale,
+                }
+                for s in signals
+            ],
+        }
+    except Exception as e:
+        container.logger.error(f"Failed to fetch strategy signals: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch signals")
+
+
+@app.get("/prices/{instrument}")
+async def get_latest_price(instrument: str):
+    """Fetch the latest price for an instrument."""
+    try:
+        price = await container.price_repo.get_latest_price(instrument)
+        if price is None:
+            raise HTTPException(status_code=404, detail=f"No price data for {instrument}")
+        return {
+            "instrument": price.instrument,
+            "timestamp": price.timestamp.isoformat(),
+            "open": price.open,
+            "high": price.high,
+            "low": price.low,
+            "close": price.close,
+            "volume": price.volume,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        container.logger.error(f"Failed to fetch price: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch price")
+
+
+@app.get("/spreads/{long}/{short}")
+async def get_latest_spread(long: str, short: str):
+    """Fetch the latest spread between two instruments."""
+    try:
+        spread = await container.spread_repo.get_latest_spread(long, short)
+        if spread is None:
+            raise HTTPException(
+                status_code=404, detail=f"No spread data for {long}/{short}"
+            )
+        return {
+            "long_instrument": spread.long_instrument,
+            "short_instrument": spread.short_instrument,
+            "value": spread.value,
+            "timestamp": spread.timestamp.isoformat(),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        container.logger.error(f"Failed to fetch spread: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch spread")
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
